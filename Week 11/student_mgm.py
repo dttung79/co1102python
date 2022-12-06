@@ -33,6 +33,48 @@ def lstBoxAllStudents_clicked(event):
     txtGrade.delete(0, END)
     txtGrade.insert(0, s[2])
 
+def btnAdd_clicked():
+    name, age, grade = get_info_textboxes() # get student info from textboxes
+    students.append([name, age, grade])     # add new student to list students
+    lstBoxAllStudents.insert(END, name)     # add new student to listbox
+
+def btnUpdate_clicked():
+    # check if listbox is selected
+    if lstBoxAllStudents.curselection() == ():
+        msgbox.showerror("Error", "Please select a student", icon='error')
+        return
+    
+    index = lstBoxAllStudents.curselection()[0]     # get selected index
+    name, age, grade = get_info_textboxes()         # get student info from textboxes
+
+    # update student in list students
+    students[index] = [name, age, grade]
+    # update student name in listbox
+    lstBoxAllStudents.delete(index)         # delete name at current index
+    lstBoxAllStudents.insert(index, name)   # insert new name at current index
+    
+    msgbox.showinfo("Update", "Student updated successfully", icon='info')
+
+def btnDelete_clicked():
+    # check if listbox is selected
+    if lstBoxAllStudents.curselection() == ():
+        msgbox.showerror("Error", "Please select a student", icon='error')
+        return
+    
+    index = lstBoxAllStudents.curselection()[0]     # get selected index
+
+    # delete student in list students
+    students.pop(index)
+    # delete student name in listbox
+    lstBoxAllStudents.delete(index)
+
+    msgbox.showinfo("Delete", "Student deleted successfully", icon='info')
+    
+def get_info_textboxes():
+    name = txtName.get()    # get name from textbox
+    age = txtAge.get()      # get age from textbox
+    grade = txtGrade.get()  # get grade from textbox
+    return name, age, grade
 
 ##### CREATE WIDGETS #####
 lblSearch = Label(window, text="Search:")
@@ -73,10 +115,10 @@ txtGrade.grid(row=3, column=5, sticky='nw', columnspan=3)
 btnAdd = Button(window, text="Add", command=btnAdd_clicked)
 btnAdd.grid(row=4, column=5, sticky='ne')
 
-btnUpdate = Button(window, text="Update")
+btnUpdate = Button(window, text="Update", command=btnUpdate_clicked)
 btnUpdate.grid(row=4, column=6, sticky='ne')
 
-btnDelete = Button(window, text="Delete")
+btnDelete = Button(window, text="Delete", command=btnDelete_clicked)
 btnDelete.grid(row=4, column=7, sticky='ne')
 
 btnLoad = Button(window, text="Load", command=btnLoad_clicked)
