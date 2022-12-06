@@ -1,5 +1,6 @@
 from tkinter import *
 import tkinter.messagebox as msgbox
+from tkinter import filedialog
 
 ##### CREATE WINDOW #####
 window = Tk()
@@ -9,6 +10,21 @@ window.geometry("700x500")
 students = []
 ##### EVENT HANDLER #####
 def btnLoad_clicked():
+    # open file dialog to get file path
+    file_path = filedialog.askopenfilename(title="Open file", 
+                            filetypes=(("Text files", "*.txt"), ("All files", "*.*")))
+    if file_path == '':
+        msgbox.showerror("Error", "Please select a file", icon='error')
+        return
+        
+    with open(file_path, 'r') as f:
+        lines = f.readlines()
+        for row in lines:
+            name = row.split(',')[0].strip()
+            age = row.split(',')[1].strip()
+            grade = row.split(',')[2].strip()
+            students.append([name, int(age), float(grade)])
+
     # clear listbox
     lstBoxAllStudents.delete(0, END)
     # load data from list students to listbox
