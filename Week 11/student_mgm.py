@@ -6,13 +6,7 @@ window = Tk()
 window.title("Student Management System")
 window.geometry("700x500")
 
-students = [['Le Minh Phuong', 20, 9.5],
-            ['Nguyen Thi Thuy', 19, 8.5],
-            ['Nguyen Van Minh', 20, 7.0],
-            ['Nguyen Thi Thu', 19, 8.0],
-            ['Do Thanh Hung', 19, 9.5],
-            ['Ha Dang Chinh', 21, 5.0],
-            ['Tran Dang Tu', 20, 10.0]]
+students = []
 ##### EVENT HANDLER #####
 def btnLoad_clicked():
     # clear listbox
@@ -69,7 +63,7 @@ def btnDelete_clicked():
     lstBoxAllStudents.delete(index)
 
     msgbox.showinfo("Delete", "Student deleted successfully", icon='info')
-    
+
 def get_info_textboxes():
     name = txtName.get()    # get name from textbox
     age = txtAge.get()      # get age from textbox
