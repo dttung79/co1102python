@@ -10,13 +10,14 @@ window.geometry("700x500")
 students = []
 ##### EVENT HANDLER #####
 def btnLoad_clicked():
+    students.clear()
     # open file dialog to get file path
     file_path = filedialog.askopenfilename(title="Open file", 
                             filetypes=(("Text files", "*.txt"), ("All files", "*.*")))
     if file_path == '':
         msgbox.showerror("Error", "Please select a file", icon='error')
         return
-        
+
     with open(file_path, 'r') as f:
         lines = f.readlines()
         for row in lines:
@@ -30,8 +31,24 @@ def btnLoad_clicked():
     # load data from list students to listbox
     for row in students:
         lstBoxAllStudents.insert(END, row[0])
+
+def btnSave_clicked():
+    file_path = filedialog.askopenfilename(title="Open file", 
+                            filetypes=(("Text files", "*.txt"), ("All files", "*.*")))
+    if file_path == '':
+        msgbox.showerror("Error", "Please select a file", icon='error')
+        return
     
+    with open(file_path, 'w') as f:
+        for row in students:
+            f.write(f'{row[0]},{row[1]},{row[2]}\n')
+    
+    msgbox.showinfo("Save", "Data saved successfully", icon='info')
+
 def lstBoxAllStudents_clicked(event):
+    # in case of unselect listbox
+    if lstBoxAllStudents.curselection() == ():
+        return
     # get selected index
     index = lstBoxAllStudents.curselection()[0]
     # get selected student
@@ -45,8 +62,12 @@ def lstBoxAllStudents_clicked(event):
 
 def btnAdd_clicked():
     name, age, grade = get_info_textboxes() # get student info from textboxes
-    students.append([name, age, grade])     # add new student to list students
-    lstBoxAllStudents.insert(END, name)     # add new student to listbox
+    try:
+        students.append([name, int(age), float(grade)])     # add new student to list students
+        lstBoxAllStudents.insert(END, name)     # add new student to listbox
+        msgbox.showinfo("Add", "Student added successfully", icon='info')
+    except ValueError:
+        msgbox.showerror("Error", "Invalid number age or grade. Please try again.", icon='error')
 
 def btnUpdate_clicked():
     # check if listbox is selected
@@ -57,13 +78,16 @@ def btnUpdate_clicked():
     index = lstBoxAllStudents.curselection()[0]     # get selected index
     name, age, grade = get_info_textboxes()         # get student info from textboxes
 
-    # update student in list students
-    students[index] = [name, age, grade]
-    # update student name in listbox
-    lstBoxAllStudents.delete(index)         # delete name at current index
-    lstBoxAllStudents.insert(index, name)   # insert new name at current index
-    
-    msgbox.showinfo("Update", "Student updated successfully", icon='info')
+    try:
+        # update student in list students
+        students[index] = [name, int(age), float(grade)]
+        # update student name in listbox
+        lstBoxAllStudents.delete(index)         # delete name at current index
+        lstBoxAllStudents.insert(index, name)   # insert new name at current index
+        
+        msgbox.showinfo("Update", "Student updated successfully", icon='info')
+    except ValueError:
+        msgbox.showerror("Error", "Invalid number age or grade. Please try again.", icon='error')
 
 def btnDelete_clicked():
     # check if listbox is selected
@@ -86,12 +110,27 @@ def get_info_textboxes():
     grade = txtGrade.get()  # get grade from textbox
     return name, age, grade
 
+def btnSearch_clicked():
+    # get search text
+    name = txtSearch.get()
+    for i in range(len(students)):
+        if name.lower() in students[i][0].lower():
+            # clear old selection
+            lstBoxAllStudents.selection_clear(0, END)
+            # set listbox is selected at position i
+            lstBoxAllStudents.selection_set(i)
+            lstBoxAllStudents_clicked(None)
+            break
+
 ##### CREATE WIDGETS #####
 lblSearch = Label(window, text="Search:")
 lblSearch.grid(row=0, column=0, sticky='e', pady=10)
 
 txtSearch = Entry(window)
 txtSearch.grid(row=0, column=1, sticky='w', columnspan=2)
+
+btnSearch = Button(window, text="Search", command=btnSearch_clicked)
+btnSearch.grid(row=0, column=2, sticky='w')
 
 lblAllStudents = Label(window, text="All Students:")
 lblAllStudents.grid(row=1, column=0, sticky='ne')
@@ -134,7 +173,7 @@ btnDelete.grid(row=4, column=7, sticky='ne')
 btnLoad = Button(window, text="Load", command=btnLoad_clicked)
 btnLoad.grid(row=5, column=1, pady=5)
 
-btnSave = Button(window, text="Save")
+btnSave = Button(window, text="Save", command=btnSave_clicked)
 btnSave.grid(row=5, column=2, pady=5)
 ##### START GUI #####
 window.mainloop()
